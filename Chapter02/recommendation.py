@@ -60,10 +60,41 @@ def sim_pearson(prefs, person1, person2):
     
     return num / den
 
+def getRecommendations(prefs, person, similarity = sim_distance):
+    totals = {}
+    simSums = {}
+    
+    for other in prefs:
+        if other == person: continue
+        sim = similarity(prefs, person, other)
+        if sim <= 0: continue
+        
+        for it in prefs[other]:
+            if it not in prefs[person] or prefs[person][it] == 0:
+                totals.setdefault(it, 0)
+                totals[it] += prefs[other][it] * sim
+                simSums.setdefault(it, 0)
+                simSums[it] += sim
+        
+    ranking = [(total / simSums[it], it) for it, total in totals.items()]
+    ranking.sort()
+    ranking.reverse()
+    return ranking
+
+def transformPrefs(prefs):
+    result = {}
+    for person in prefs:
+        for item in prefs[person]:
+            result.setdefault(item, {})
+            result[item][person] = prefs[person][item]
+    return result
+    
 def main():
     person1 = 'Lisa Rose'
     person2 = 'Gene Seymour'
+    print sim_distance(critics, person1, person2)
     print sim_pearson(critics, person1, person2)
+    print getRecommendations(critics, 'Toby', sim_pearson)
     
 if __name__ == '__main__':
     main()    
