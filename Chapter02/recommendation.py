@@ -89,8 +89,13 @@ def transformPrefs(prefs):
             result[item][person] = prefs[person][item]
     return result
 
-def topMatched():
-    return 
+def topMatches(prefs, person, n = 5, similarity = sim_pearson):
+    scores = [(similarity(prefs, person, other), other)
+                    for other in prefs if other != person]
+    scores.sort()
+    scores.reverse()
+    return scores[0:n]
+
     
 def main():
     person1 = 'Lisa Rose'
@@ -98,7 +103,9 @@ def main():
     print sim_distance(critics, person1, person2)
     print sim_pearson(critics, person1, person2)
     print getRecommendations(critics, 'Toby', sim_pearson)
-    
+    print topMatches(critics, 'Toby', 3)
+    print topMatches(critics, 'Toby', 3, sim_distance)
+     
 if __name__ == '__main__':
     main()    
     
